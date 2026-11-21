@@ -1,3 +1,4 @@
+import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/900.css";
 import React from "react";
 import { AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig } from "remotion";

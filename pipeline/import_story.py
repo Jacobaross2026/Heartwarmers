@@ -106,11 +106,10 @@ def check(d: dict) -> tuple[list[str], list[str]]:
     for i, sh in enumerate(d.get("shots", []), 1):
         if not sh.get("search") and not sh.get("file"):
             errs.append(f"Shot {i} has no search words.")
-    for f in d.get("story_footage", []):
-        if f.get("url") and f.get("rights_status", "unknown") not in ("owned", "permission_granted",
-                                                                       "public_domain", "creative_commons"):
-            warns.append(f"Original footage ({f.get('creator') or f.get('url')}) has no confirmed permission; "
-                         f"using stock instead. Ask the creator if you want to use it.")
+    media = d.get("story_media") or d.get("story_footage") or []
+    if not [m for m in media if m.get("url")]:
+        warns.append("No story_media links: the video will be all stock footage, which won't pass the "
+                     "quality check. Ask Grok for the story's original videos/photos.")
     return errs, warns
 
 
@@ -131,34 +130,57 @@ def best_match(hits: list[dict], query: str) -> dict:
     return max(hits, key=lambda h: (score(h), -hits.index(h)))
 
 
-def pick_stock(shots: list[dict]) -> list[dict]:
-    """One Pixabay clip per shot, never the same clip twice in a video."""
+def stock_for(sh: dict, i: int, used: set) -> dict:
+    """One Pixabay clip for a shot, never the same clip twice in a video."""
     from .stock import pixabay
+    q = sh.get("search") or "happy people"
+    hits = []
+    for query in (q, " ".join(q.split()[:2]), q.split()[0]):
+        hits = [h for h in pixabay.search(query.replace(" ", "+"), 20)
+                if h["id"] not in used and h["duration"] >= 4]
+        if hits:
+            break
+    if not hits:
+        raise Problem(f"No Pixabay footage found for shot {i} ('{q}'). Change its search words.")
+    h = best_match(hits, q)
+    used.add(h["id"])
+    rec = pixabay.download(h, f"pixabay-{h['id']}")
+    rec.update({"beat": sh.get("sentence", "")[:60], "search": q,
+                "start": round(min(1.0, h["duration"] * 0.1), 1), "focus_x": 0.5, "framing": "crop"})
+    print(f"   shot {i}: stock '{q}' -> Pixabay {h['id']} by {h['creator']}")
+    return rec
+
+
+def real_slots(shots: list[dict], n_real: int) -> list[int]:
+    """Which shots get the story's own footage. Grok's "use": "real" wins; otherwise the
+    hook, the payoff (second to last) and the middle, in that order."""
+    marked = [i for i, sh in enumerate(shots) if sh.get("use") == "real"]
+    if marked:
+        return marked[:n_real]
+    order = [0, len(shots) - 2, len(shots) // 2, 1, len(shots) - 3, len(shots) - 1]
+    slots = []
+    for i in order:
+        if 0 <= i < len(shots) and i not in slots:
+            slots.append(i)
+    return slots[:n_real]
+
+
+def build_footage(shots: list[dict], real: list[dict]) -> list[dict]:
+    # photos and the original upload first; one real item per shot
+    real = sorted(real, key=lambda r: (not r["is_original"], r["kind"] != "video"))
+    slots = real_slots(shots, len(real))
+    by_slot = dict(zip(slots, real))  # best media goes to the most important slot
     used, footage = set(), []
-    for i, sh in enumerate(shots, 1):
-        if sh.get("file"):  # footage you supplied yourself; rights must be filled in
+    for i, sh in enumerate(shots):
+        if sh.get("file"):  # a file you placed yourself
             footage.append(sh)
-            continue
-        q = sh["search"]
-        hits = []
-        for query in (q, " ".join(q.split()[:2]), q.split()[0]):
-            hits = [h for h in pixabay.search(query.replace(" ", "+"), 20)
-                    if h["id"] not in used and h["duration"] >= 4]
-            if hits:
-                break
-        if not hits:
-            raise Problem(f"No Pixabay footage found for shot {i} ('{q}'). Change its search words.")
-        h = best_match(hits, q)
-        used.add(h["id"])
-        rec = pixabay.download(h, f"pixabay-{h['id']}")
-        rec.update({
-            "beat": sh.get("sentence", "")[:60], "search": q,
-            "start": round(min(1.0, h["duration"] * 0.1), 1),
-            # vertical clips need no cropping; horizontal ones are centred
-            "focus_x": 0.5, "framing": "crop",
-        })
-        footage.append(rec)
-        print(f"   shot {i}: '{q}' -> Pixabay {h['id']} by {h['creator']}")
+        elif i in by_slot:
+            rec = dict(by_slot[i], beat=sh.get("sentence", "")[:60], search=sh.get("search", ""),
+                       start="auto", focus_x="auto", framing="auto")
+            print(f"   shot {i + 1}: REAL {Path(rec['file']).name} ({rec['platform']})")
+            footage.append(rec)
+        else:
+            footage.append(stock_for(sh, i + 1, used))
     return footage
 
 
@@ -187,7 +209,14 @@ def import_file(path: Path) -> Path:
         n += 1
     sid = out.stem
 
-    footage = pick_stock(d["shots"])
+    from .source_media import fetch
+    media = d.get("story_media") or d.get("story_footage") or []
+    real, problems = fetch(media, sid)
+    for p in problems:
+        print(f"   note: {p}")
+    if not real:
+        print("   WARNING: no real story footage downloaded; the quality check will block this video.")
+    footage = build_footage(d["shots"], real)
     sc["chosen_title"] = choose_title(sc["titles"])
     story = {
         "id": sid,
@@ -195,7 +224,7 @@ def import_file(path: Path) -> Path:
         "is_sample": bool(d.get("is_sample", False)),
         "imported_from": path.name,
         "story": {**st, "category": st.get("category", "everyday_hero_kindness")},
-        "story_footage": d.get("story_footage", []),
+        "story_media": media,
         "script": sc,
         "footage": footage,
         "music": d.get("music", {"file": "auto", "source": "", "license": ""}),
@@ -207,7 +236,8 @@ def import_file(path: Path) -> Path:
 def main() -> int:
     INBOX.mkdir(parents=True, exist_ok=True)
     (ASSETS / "footage").mkdir(parents=True, exist_ok=True)
-    files = sorted(p for p in INBOX.iterdir() if p.is_file() and p.suffix.lower() in (".txt", ".json", ".md"))
+    files = sorted(p for p in INBOX.iterdir() if p.is_file() and p.suffix.lower() in (".txt", ".json", ".md")
+                   and p.name.lower() != "readme.md")
     if not files:
         print(f"The inbox is empty. Save Grok's answer as a .txt file in {INBOX}")
         return 0

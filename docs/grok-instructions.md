@@ -47,13 +47,19 @@ Rules for the script:
 - 3 titles in DIFFERENT styles. Use these style names: "stakes_reveal",
   "kind_hearted_template" (e.g. "A Kind-Hearted Officer ... ❤️🥹"), "curiosity",
   "emotional_quote", "question". Titles under 70 characters.
+- Story media (VERY IMPORTANT): list the story's OWN videos and photos under "story_media",
+  2–5 items. Give the direct link to each post or file: the original Facebook/X/Instagram/
+  TikTok/YouTube post, a direct image link, or the news article that shows them.
+  Prefer the ORIGINAL poster (the family, the department, the person who filmed it) over
+  news re-uploads, and set "is_original" accordingly. Say who posted it in "creator"
+  (e.g. "Smith family", "Dayton Police Department"). "type" is "video", "image" or "page".
 - Shots: one shot per spoken sentence (hook, each body sentence, question), in order.
-  For each, give a 2–4 word stock-footage search in plain English describing what the
-  viewer should SEE (e.g. "boy waiting window", "police car arriving", "birthday cake candles").
-  Avoid names, brands, and abstract words.
+  Set "use" to "real" for the 2–3 moments where the story's own footage fits best (usually
+  the hook and the payoff), and "stock" for in-between moments. ALWAYS also give a 2–4 word
+  stock-footage search in plain English describing what the viewer should SEE (e.g.
+  "boy waiting window", "police car arriving"); it's the backup if a real clip can't be
+  downloaded. Avoid names, brands, and abstract words in searches.
 - Only include facts you can source. Give at least one real source link.
-- If the story has its own original footage, list it under "story_footage" with who filmed it
-  and whether we have permission. Use rights_status "unknown" unless permission is confirmed.
 
 Answer with ONLY this JSON, filled in:
 
@@ -69,8 +75,8 @@ Answer with ONLY this JSON, filled in:
     "celebrity_involved": false,
     "sources": [{ "name": "", "url": "" }]
   },
-  "story_footage": [
-    { "description": "", "url": "", "creator": "", "rights_status": "unknown", "notes": "" }
+  "story_media": [
+    { "url": "", "type": "video", "creator": "", "is_original": true, "description": "" }
   ],
   "script": {
     "hooks": [
@@ -88,7 +94,8 @@ Answer with ONLY this JSON, filled in:
     ]
   },
   "shots": [
-    { "sentence": "", "search": "" }
+    { "sentence": "", "use": "real", "search": "" },
+    { "sentence": "", "use": "stock", "search": "" }
   ]
 }
 ```

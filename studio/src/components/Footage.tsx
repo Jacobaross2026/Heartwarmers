@@ -2,7 +2,29 @@ import React from "react";
 import { AbsoluteFill, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { brand } from "../brand";
 
-export type Shot = { src: string; from: number; dur: number };
+export type Shot = { src: string; from: number; dur: number; credit?: string };
+
+/** Small on-screen credit for the story's own footage (e.g. "Video: Smith family"). */
+const Credit: React.FC<{ text: string }> = ({ text }) => (
+  <div
+    style={{
+      position: "absolute",
+      zIndex: 2,
+      top: 218,
+      left: 64,
+      padding: "6px 16px",
+      borderRadius: 999,
+      background: "rgba(0,0,0,0.45)",
+      color: brand.colors.cream,
+      fontFamily: brand.font.family,
+      fontWeight: 700,
+      fontSize: 26,
+      letterSpacing: 0.3,
+    }}
+  >
+    {text}
+  </div>
+);
 
 const ShotView: React.FC<{ shot: Shot; index: number }> = ({ shot, index }) => {
   const f = useCurrentFrame();
@@ -12,6 +34,7 @@ const ShotView: React.FC<{ shot: Shot; index: number }> = ({ shot, index }) => {
   const fadeIn = index === 0 ? 1 : interpolate(f, [0, 5], [0.4, 1], { extrapolateRight: "clamp" });
   return (
     <AbsoluteFill style={{ opacity: fadeIn }}>
+      {shot.credit ? <Credit text={shot.credit} /> : null}
       <OffthreadVideo
         src={staticFile(shot.src)}
         muted

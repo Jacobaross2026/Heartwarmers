@@ -42,7 +42,15 @@ def run(video: Path, story: dict, desc: str, caption_match: float) -> tuple[list
         fails.append(f"Title style '{style}' was already used in one of the last 2 videos. "
                      f"Pick a different title option.")
 
-    if "Footage:" not in desc or not story["story"].get("sources"):
+    real = [f for f in story["footage"] if f.get("real")]
+    if not real:
+        fails.append("No real footage or photos from the story itself: all-stock Shorts don't get "
+                     "pushed by YouTube. Add the story's own videos/photos (story_media in Grok's answer).")
+    elif len(story["footage"]) - len(real) > len(story["footage"]) * 0.6:
+        warns.append(f"Only {len(real)} of {len(story['footage'])} shots are real story footage; "
+                     f"more real shots usually perform better.")
+
+    if "ootage" not in desc or not story["story"].get("sources"):
         fails.append("Source credits are missing from the description.")
 
     for f in story["footage"]:

@@ -2,3 +2,6 @@ faster-whisper==1.1.1
 av>=11,<14
 requests>=2.31
 python-dotenv>=1.0
+yt-dlp>=2026.10
+opencv-python-headless>=4.9,<5
+numpy>=1.26

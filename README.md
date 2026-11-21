@@ -55,11 +55,28 @@ Full steps and the instructions block to paste into Grok: **`docs\grok-instructi
    ```
    .venv\Scripts\python -m pipeline.import_story --make
    ```
-   It checks the story (length, hooks, titles, sources), picks Pixabay footage for each
-   sentence, chooses a title style you haven't used in the last 2 videos, then renders.
+   It checks the story (length, hooks, titles, sources), **downloads the story's own videos
+   and photos** from the links Grok gave (`story_media`), places them on the key moments
+   (hook and payoff first), fills the other sentences with Pixabay stock, chooses a title
+   style you haven't used in the last 2 videos, then renders.
    If something's missing, it says what in plain English and leaves the file in the inbox.
 
 An example answer is in `docs\example-grok-answer.txt`.
+
+### The story's own footage (real clips and photos)
+- Anything Grok links is treated as cleared to use: **you handle permission yourself**,
+  outside the studio. The studio still credits every item on screen ("Video: Smith family")
+  and in the description.
+- For each real video it picks the steadiest, sharpest few seconds automatically and centres
+  the vertical crop on people's faces. Photos with no clear faces are shown whole over a soft
+  blurred background.
+- Some sites block automatic downloads (often Facebook, Instagram, TikTok, and news sites
+  with "are you a robot" checks). The importer tells you which link failed. Either set
+  `YTDLP_COOKIES_BROWSER=chrome` (or edge/firefox) in `.env` so it can use your own login,
+  or save the file yourself into `assets\footage\<story-id>\` as `real-5.mp4` / `real-6.jpg`
+  and add it to the story file.
+- A Short with **no** real story footage fails the quality check: all-stock Shorts don't
+  get pushed by YouTube.
 
 ## Make a Short from a story file
 
@@ -89,8 +106,9 @@ A video only counts as **ready** if all of these pass. If any fail, it tells you
 - captions match the spoken words (≥85%)
 - the title style isn't the same one used in either of the last 2 videos
 - source and footage credits are in the description
-- every clip has a rights status we're allowed to use (`owned`, `licensed_stock`,
-  `permission_granted`, `public_domain`, `creative_commons`)
+- at least one shot is the story's own footage or photo
+- every clip has a rights status filled in (stock is recorded automatically; story media
+  is marked as cleared because you handle permission yourself)
 - it isn't a sample/test story
 
 If any clip is marked `"ai_generated": true`, the report reminds you to tick YouTube's

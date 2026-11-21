@@ -57,7 +57,12 @@ def main(story_path: str, reuse_voice: bool = False) -> int:
     for i, (shot, a, b) in enumerate(zip(shots, starts, ends)):
         name = f"shot{i}.mp4"
         footage.prepare_shot(shot, b - a, job / name)
-        shot_props.append({"src": f"jobs/{sid}/{name}", "from": round(a * FPS), "dur": round((b - a) * FPS)})
+        credit = ""
+        if shot.get("real"):
+            what = "Photo" if shot.get("kind") == "image" else "Video"
+            credit = f"{what}: {shot.get('creator') or shot.get('platform') or shot.get('source')}"
+        shot_props.append({"src": f"jobs/{sid}/{name}", "from": round(a * FPS), "dur": round((b - a) * FPS),
+                           "credit": credit})
         print(f"   shot {i+1}: {shot.get('beat', shot['file'])} {a:.1f}-{b:.1f}s")
     # make shot lengths add up exactly to the video length in frames
     shot_props[-1]["dur"] = round(total * FPS) - shot_props[-1]["from"]
