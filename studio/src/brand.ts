@@ -25,10 +25,9 @@ export const brand = {
     strokePx: 9, // dark outline around caption text
   },
 
-  hookCard: {
-    seconds: 2.0, // how long the hook card stays up at the start (captions start after it)
-    top: 1000, // distance from the top in pixels; lower third keeps faces visible
-    fontSize: 84,
+  hook: {
+    // The opening sentence: same caption style, shown in full from the first frame.
+    scale: 1.25, // how much bigger than normal captions
   },
 
   endCard: {

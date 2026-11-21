@@ -76,8 +76,8 @@ def check(d: dict) -> tuple[list[str], list[str]]:
     for k in ("body", "question"):
         if not sc.get(k):
             errs.append(f"script.{k} is empty.")
-    if not sc.get("hook_card"):
-        warns.append("No hook_card text; the hook itself will be shown on the card.")
+        elif len(hooks[ch].get("text", "").split()) > 10:
+            warns.append("The hook is over 10 words; it's the big opening text, so shorter reads better.")
 
     titles = sc.get("titles", [])
     if len(titles) < 3:

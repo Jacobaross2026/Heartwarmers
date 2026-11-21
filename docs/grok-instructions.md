@@ -38,12 +38,12 @@ everywhere.
 Rules for the script:
 - The whole spoken script (hook + body + question) must be 45–52 words. That is about
   22 seconds when read aloud in our calm, warm narration. Count the words.
-- Hook: one sentence that states the STAKES FIRST and saves the payoff.
+- Hook: one sentence that states the STAKES FIRST and saves the payoff. It is also the
+  big on-screen text in the first second, so keep it under 10 words.
   Good: "He had never scored a touchdown." Bad: "These kids just scored a touchdown!"
   Write 3 hooks in different styles and pick the strongest stakes-first one.
 - Body: 4 short sentences, plain spoken English, past tense, no hashtags or emojis.
 - End with a short question viewers can answer in the comments (under 8 words).
-- Hook card: 3–6 words shown on screen in the first second, a teaser of the hook.
 - 3 titles in DIFFERENT styles. Use these style names: "stakes_reveal",
   "kind_hearted_template" (e.g. "A Kind-Hearted Officer ... ❤️🥹"), "curiosity",
   "emotional_quote", "question". Titles under 70 characters.
@@ -79,7 +79,6 @@ Answer with ONLY this JSON, filled in:
       { "text": "", "style": "curiosity" }
     ],
     "chosen_hook": 0,
-    "hook_card": "",
     "body": "",
     "question": "",
     "titles": [

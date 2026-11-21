@@ -74,7 +74,6 @@ def main(story_path: str, reuse_voice: bool = False) -> int:
         "audio": f"jobs/{sid}/mix.wav",
         "shots": shot_props,
         "words": [{"word": w["word"], "start": w["start"] + HOOK_LEAD, "end": w["end"] + HOOK_LEAD} for w in words],
-        "hookCard": s.get("hook_card") or s["hooks"][s.get("chosen_hook", 0)]["text"],
         "question": s["question"],
         "voiceEnd": HOOK_LEAD + voice_len,
     }

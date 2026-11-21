@@ -26,22 +26,31 @@ const toLines = (words: Word[]): Word[][] => {
   return lines;
 };
 
-export const Captions: React.FC<{ words: Word[]; showFrom: number; hideAfter: number }> = ({ words, showFrom, hideAfter }) => {
+export const Captions: React.FC<{ words: Word[]; hideAfter: number }> = ({ words, hideAfter }) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
   const t = frame / fps;
-  if (t >= hideAfter || t < showFrom) return null;
-  const lines = toLines(words.filter((w) => w.end > showFrom));
+  if (t >= hideAfter) return null;
+  // The opening (hook) sentence is one big line, on screen from frame 0 so the
+  // stakes are readable before the voice even starts.
+  const hookEnd = words.findIndex((w) => /[.?!]["']?$/.test(w.word));
+  const hookWords = words.slice(0, hookEnd + 1);
+  const lines = [hookWords, ...toLines(words.slice(hookEnd + 1))].filter((l) => l.length);
   const line = lines.find((l, i) => {
+    if (i === 0 && l === hookWords && t < l[0].start) return true;
     const next = lines[i + 1];
     const lastEnd = l[l.length - 1].end;
     // visible from its first word until the next line starts, but hidden during long pauses
     return t >= l[0].start - 0.05 && (!next || t < next[0].start - 0.05) && t < lastEnd + 0.4;
   });
   if (!line) return null;
-  const lineStart = Math.round((line[0].start - 0.05) * fps);
+  const isHook = line === hookWords;
+  const lineStart = isHook ? 0 : Math.round((line[0].start - 0.05) * fps);
   const pop = spring({ frame: frame - lineStart, fps, config: { damping: 14, stiffness: 220 } });
-  const { fontSize, centerY, strokePx } = brand.captions;
+  const k = isHook ? brand.hook.scale : 1;
+  const fontSize = brand.captions.fontSize * k;
+  const strokePx = brand.captions.strokePx * k;
+  const { centerY } = brand.captions;
 
   return (
     <AbsoluteFill>

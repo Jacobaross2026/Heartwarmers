@@ -15,7 +15,6 @@ const preview: ShortProps = {
     { word: "the", start: 1.4, end: 1.5 },
     { word: "captions.", start: 1.5, end: 2.2 },
   ],
-  hookCard: "Nobody came to his party...",
   question: "Would you have shown up?",
   voiceEnd: 3,
 };
