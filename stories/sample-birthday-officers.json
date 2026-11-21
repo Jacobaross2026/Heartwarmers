@@ -1,0 +1,156 @@
+{
+  "id": "sample-birthday-officers",
+  "status": "draft",
+  "is_sample": true,
+  "sample_note": "TEST STORY for checking the pipeline. Not a real, sourced story - do not publish. The quality check blocks it on purpose.",
+  "story": {
+    "who": "Jayden, 8, and officers from his local police department",
+    "what": "No classmates came to his birthday party; his mom called the police station and officers showed up with gifts and stayed for cake.",
+    "where": "Example City, USA",
+    "date": "2026-11-01",
+    "category": "everyday_hero_kindness",
+    "hero_type": "police officer",
+    "beneficiary": "child",
+    "celebrity_involved": false,
+    "sources": [
+      {
+        "name": "Example source (placeholder)",
+        "url": "https://example.com/story",
+        "type": "news"
+      }
+    ]
+  },
+  "script": {
+    "hooks": [
+      {
+        "text": "Not one classmate came to his birthday party.",
+        "style": "stakes_first"
+      },
+      {
+        "text": "These officers crashed an 8-year-old's birthday party.",
+        "style": "payoff_first"
+      },
+      {
+        "text": "His mom made one phone call that changed his birthday.",
+        "style": "curiosity"
+      }
+    ],
+    "chosen_hook": 0,
+    "hook_card": "Nobody came to his party...",
+    "body": "Eight-year-old Jayden waited by the door for an hour. So his mom called the local police station, hoping someone might stop by. Twenty minutes later, three patrol cars pulled up, gifts in hand. The officers stayed for cake, games, and a ride in the cruiser. Jayden called it his best birthday ever.",
+    "question": "Would you have shown up?",
+    "titles": [
+      {
+        "text": "Nobody Came to His Birthday… Until the Police Did ❤️",
+        "style": "stakes_reveal"
+      },
+      {
+        "text": "A Kind-Hearted Officer Saved This Boy's Birthday ❤️🥹",
+        "style": "kind_hearted_template"
+      },
+      {
+        "text": "His Mom Made One Call. Then 3 Patrol Cars Pulled Up 🚓",
+        "style": "curiosity"
+      }
+    ],
+    "chosen_title": 0
+  },
+  "footage": [
+    {
+      "file": "assets/footage/pixabay-47064.mp4",
+      "source": "Pixabay",
+      "creator": "Roxolana",
+      "url": "https://pixabay.com/videos/id-47064/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 3.0,
+      "focus_x": 0.4,
+      "framing": "crop",
+      "beat": "Boy waiting"
+    },
+    {
+      "file": "assets/footage/pixabay-64741.mp4",
+      "source": "Pixabay",
+      "creator": "asiseaproducciones",
+      "url": "https://pixabay.com/videos/id-64741/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 2.0,
+      "focus_x": 0.45,
+      "framing": "crop",
+      "beat": "Quiet street"
+    },
+    {
+      "file": "assets/footage/pixabay-7315.mp4",
+      "source": "Pixabay",
+      "creator": "MilanWulf",
+      "url": "https://pixabay.com/videos/id-7315/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 3.4,
+      "focus_x": 0.62,
+      "framing": "crop",
+      "beat": "Police lights"
+    },
+    {
+      "file": "assets/footage/pixabay-184738.mp4",
+      "source": "Pixabay",
+      "creator": "santosjesus90",
+      "url": "https://pixabay.com/videos/id-184738/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 4.0,
+      "focus_x": 0.14,
+      "framing": "crop",
+      "beat": "Patrol car arrives"
+    },
+    {
+      "file": "assets/footage/pixabay-146578.mp4",
+      "source": "Pixabay",
+      "creator": "New1one",
+      "url": "https://pixabay.com/videos/id-146578/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 2.0,
+      "focus_x": 0.45,
+      "framing": "crop",
+      "beat": "Birthday candles"
+    },
+    {
+      "file": "assets/footage/pixabay-125310.mp4",
+      "source": "Pixabay",
+      "creator": "Marsel_beijing",
+      "url": "https://pixabay.com/videos/id-125310/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 0.3,
+      "focus_x": 0.72,
+      "framing": "crop",
+      "beat": "Excited kids"
+    },
+    {
+      "file": "assets/footage/pixabay-44223.mp4",
+      "source": "Pixabay",
+      "creator": "fajarbudi86",
+      "url": "https://pixabay.com/videos/id-44223/",
+      "license": "Pixabay Content License",
+      "rights_status": "licensed_stock",
+      "ai_generated": false,
+      "start": 1.0,
+      "focus_x": 0.5,
+      "framing": "crop",
+      "beat": "Boy grinning"
+    }
+  ],
+  "music": {
+    "file": "auto",
+    "source": "",
+    "license": ""
+  }
+}

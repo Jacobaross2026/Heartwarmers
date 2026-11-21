@@ -1,0 +1,20 @@
+# Secrets - never commit
+.env
+
+# Python / Node
+.venv/
+__pycache__/
+node_modules/
+
+# Generated media (big files)
+work/
+output/
+studio/public/jobs/
+studio/out/
+assets/footage/*
+!assets/footage/README.md
+assets/music/*
+!assets/music/README.md
+*.mp4
+*.mp3
+*.wav
