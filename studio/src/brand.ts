@@ -20,9 +20,9 @@ export const brand = {
 
   captions: {
     wordsPerLine: 3, // how many words show at once
-    fontSize: 92,
-    centerY: 0.64, // 0 = top, 1 = bottom. Kept above the Shorts buttons.
-    strokePx: 10, // dark outline around caption text
+    fontSize: 78,
+    centerY: 0.69, // 0 = top, 1 = bottom. Kept above the Shorts title and buttons.
+    strokePx: 9, // dark outline around caption text
   },
 
   hookCard: {

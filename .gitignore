@@ -18,3 +18,5 @@ assets/music/*
 *.mp4
 *.mp3
 *.wav
+stories/inbox/*
+!stories/inbox/README.md

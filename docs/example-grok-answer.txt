@@ -1,0 +1,44 @@
+Here's your story! 🎉
+
+```json
+{
+  "is_sample": true,
+  "story": {
+    "who": "Jayden, 8, and officers from his local police department",
+    "what": "No classmates came to his birthday party; his mom called the police station and officers showed up with gifts and stayed for cake.",
+    "where": "Example City, USA",
+    "date": "2026-11-01",
+    "hero_type": "police officers",
+    "beneficiary": "child",
+    "celebrity_involved": false,
+    "sources": [{ "name": "Example source (placeholder)", "url": "https://example.com/story" }]
+  },
+  "story_footage": [],
+  "script": {
+    "hooks": [
+      { "text": "Not one classmate came to his birthday party.", "style": "stakes_first" },
+      { "text": "These officers crashed an 8-year-old's birthday party.", "style": "payoff_first" },
+      { "text": "His mom made one phone call that changed his birthday.", "style": "curiosity" }
+    ],
+    "chosen_hook": 0,
+    "hook_card": "Nobody came to his party...",
+    "body": "Eight-year-old Jayden waited by the door for an hour. So his mom called the local police station, hoping someone might stop by. Twenty minutes later, three patrol cars pulled up, gifts in hand. The officers stayed for cake, games, and a ride in the cruiser. Jayden called it his best birthday ever.",
+    "question": "Would you have shown up?",
+    "titles": [
+      { "text": "Nobody Came to His Birthday… Until the Police Did ❤️", "style": "stakes_reveal" },
+      { "text": "A Kind-Hearted Officer Saved This Boy's Birthday ❤️🥹", "style": "kind_hearted_template" },
+      { "text": "His Mom Made One Call. Then 3 Patrol Cars Pulled Up 🚓", "style": "curiosity" }
+    ]
+  },
+  "shots": [
+    { "sentence": "Not one classmate came to his birthday party.", "search": "sad boy" },
+    { "sentence": "Eight-year-old Jayden waited by the door for an hour.", "search": "child waiting" },
+    { "sentence": "So his mom called the local police station...", "search": "woman phone call" },
+    { "sentence": "Twenty minutes later, three patrol cars pulled up...", "search": "police car" },
+    { "sentence": "The officers stayed for cake, games...", "search": "birthday cake candles" },
+    { "sentence": "Jayden called it his best birthday ever.", "search": "boy smiling" },
+    { "sentence": "Would you have shown up?", "search": "birthday balloons" }
+  ]
+}
+```
+Let me know if you want changes!

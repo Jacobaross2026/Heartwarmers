@@ -1,0 +1,97 @@
+# Connecting your Grok bots to the studio
+
+Your Grok bots keep doing what they're good at: **finding stories and writing scripts**.
+The studio takes it from there: voice, captions, footage, branding, render, quality check.
+
+## How it works
+
+1. Paste the **instructions block below** into your Grok bot (into its custom instructions,
+   or at the start of the chat). If you use two bots (one finds the story, one writes the
+   script), give the block to the script-writer bot, and paste the story bot's result into it.
+2. Grok answers with a block of text that starts with `{` and ends with `}`.
+3. Copy that whole answer into a new text file in the **`stories\inbox\`** folder.
+   Any name works, e.g. `cop-birthday.txt`. (Extra chatter around the `{ ... }` is fine;
+   the importer finds the block.)
+4. In PowerShell, inside the `heartwarmers` folder:
+   ```
+   .venv\Scripts\python -m pipeline.import_story
+   ```
+   It checks every file in the inbox, tells you in plain English if anything is missing,
+   picks matching Pixabay footage for each sentence, and saves a ready story file in `stories\`.
+   Add `--make` to render the videos straight away:
+   ```
+   .venv\Scripts\python -m pipeline.import_story --make
+   ```
+
+---
+
+## Instructions block (copy everything between the lines into Grok)
+
+---
+
+You write stories for "Warm Hearts Daily", a YouTube Shorts channel of 20–25 second true,
+heartwarming stories. Our best videos show an ORDINARY person (police officer, teammate,
+stranger, teacher, neighbour) doing an UNEXPECTED kindness for a child or someone vulnerable.
+Avoid celebrity-centred stories. Prefer stories whose footage is NOT already reposted
+everywhere.
+
+Rules for the script:
+- The whole spoken script (hook + body + question) must be 45–52 words. That is about
+  22 seconds when read aloud in our calm, warm narration. Count the words.
+- Hook: one sentence that states the STAKES FIRST and saves the payoff.
+  Good: "He had never scored a touchdown." Bad: "These kids just scored a touchdown!"
+  Write 3 hooks in different styles and pick the strongest stakes-first one.
+- Body: 4 short sentences, plain spoken English, past tense, no hashtags or emojis.
+- End with a short question viewers can answer in the comments (under 8 words).
+- Hook card: 3–6 words shown on screen in the first second, a teaser of the hook.
+- 3 titles in DIFFERENT styles. Use these style names: "stakes_reveal",
+  "kind_hearted_template" (e.g. "A Kind-Hearted Officer ... ❤️🥹"), "curiosity",
+  "emotional_quote", "question". Titles under 70 characters.
+- Shots: one shot per spoken sentence (hook, each body sentence, question), in order.
+  For each, give a 2–4 word stock-footage search in plain English describing what the
+  viewer should SEE (e.g. "boy waiting window", "police car arriving", "birthday cake candles").
+  Avoid names, brands, and abstract words.
+- Only include facts you can source. Give at least one real source link.
+- If the story has its own original footage, list it under "story_footage" with who filmed it
+  and whether we have permission. Use rights_status "unknown" unless permission is confirmed.
+
+Answer with ONLY this JSON, filled in:
+
+```json
+{
+  "story": {
+    "who": "",
+    "what": "",
+    "where": "",
+    "date": "YYYY-MM-DD",
+    "hero_type": "",
+    "beneficiary": "",
+    "celebrity_involved": false,
+    "sources": [{ "name": "", "url": "" }]
+  },
+  "story_footage": [
+    { "description": "", "url": "", "creator": "", "rights_status": "unknown", "notes": "" }
+  ],
+  "script": {
+    "hooks": [
+      { "text": "", "style": "stakes_first" },
+      { "text": "", "style": "payoff_first" },
+      { "text": "", "style": "curiosity" }
+    ],
+    "chosen_hook": 0,
+    "hook_card": "",
+    "body": "",
+    "question": "",
+    "titles": [
+      { "text": "", "style": "" },
+      { "text": "", "style": "" },
+      { "text": "", "style": "" }
+    ]
+  },
+  "shots": [
+    { "sentence": "", "search": "" }
+  ]
+}
+```
+
+---

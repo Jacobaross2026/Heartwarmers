@@ -10,7 +10,7 @@ API = "https://api.elevenlabs.io/v1/text-to-speech/{voice}"
 
 def synthesize(text: str, out_path: Path) -> Path:
     key = env("ELEVENLABS_API_KEY", "proxy-injected")
-    voice = env("ELEVENLABS_VOICE_ID", "nPczCjzI2devNBz1zQrb")
+    voice = env("ELEVENLABS_VOICE_ID", "lXiPxoDwq0d2OK7NdaXw")  # Kristen
     model = env("ELEVENLABS_MODEL", "eleven_multilingual_v2")
     r = requests.post(
         API.format(voice=voice),
@@ -20,7 +20,8 @@ def synthesize(text: str, out_path: Path) -> Path:
             "text": text,
             "model_id": model,
             # Same settings every video = one consistent channel voice.
-            "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.3},
+            "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.3,
+                               "speed": float(env("ELEVENLABS_SPEED", "1.08"))},
         },
         timeout=120,
     )

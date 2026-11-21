@@ -4,19 +4,25 @@ import { brand } from "../brand";
 
 export type Word = { word: string; start: number; end: number };
 
-/** Split words into short lines, breaking early at sentence ends. */
+/** Split each sentence into evenly sized lines (never a lonely last word). */
 const toLines = (words: Word[]): Word[][] => {
-  const lines: Word[][] = [];
+  const max = brand.captions.wordsPerLine;
+  const sentences: Word[][] = [];
   let cur: Word[] = [];
   for (const w of words) {
     cur.push(w);
-    const sentenceEnd = /[.?!,]["']?$/.test(w.word);
-    if (cur.length >= brand.captions.wordsPerLine || sentenceEnd) {
-      lines.push(cur);
+    if (/[.?!]["']?$/.test(w.word)) {
+      sentences.push(cur);
       cur = [];
     }
   }
-  if (cur.length) lines.push(cur);
+  if (cur.length) sentences.push(cur);
+  const lines: Word[][] = [];
+  for (const sent of sentences) {
+    const n = Math.ceil(sent.length / max);
+    const size = sent.length / n;
+    for (let i = 0; i < n; i++) lines.push(sent.slice(Math.round(i * size), Math.round((i + 1) * size)));
+  }
   return lines;
 };
 
@@ -28,7 +34,9 @@ export const Captions: React.FC<{ words: Word[]; showFrom: number; hideAfter: nu
   const lines = toLines(words.filter((w) => w.end > showFrom));
   const line = lines.find((l, i) => {
     const next = lines[i + 1];
-    return t >= l[0].start - 0.05 && (!next || t < next[0].start - 0.05);
+    const lastEnd = l[l.length - 1].end;
+    // visible from its first word until the next line starts, but hidden during long pauses
+    return t >= l[0].start - 0.05 && (!next || t < next[0].start - 0.05) && t < lastEnd + 0.4;
   });
   if (!line) return null;
   const lineStart = Math.round((line[0].start - 0.05) * fps);

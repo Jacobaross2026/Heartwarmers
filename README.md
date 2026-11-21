@@ -44,7 +44,24 @@ Save and close. The `.env` file is private: it is never uploaded to GitHub.
 
 ---
 
-## Make a Short
+## Feed stories from your Grok bots
+
+Your Grok bots keep finding stories and writing scripts; the studio does the rest.
+Full steps and the instructions block to paste into Grok: **`docs\grok-instructions.md`**.
+
+1. Grok answers in a fixed format (one `{ ... }` block).
+2. Save the answer as a `.txt` file in `stories\inbox\`.
+3. Run:
+   ```
+   .venv\Scripts\python -m pipeline.import_story --make
+   ```
+   It checks the story (length, hooks, titles, sources), picks Pixabay footage for each
+   sentence, chooses a title style you haven't used in the last 2 videos, then renders.
+   If something's missing, it says what in plain English and leaves the file in the inbox.
+
+An example answer is in `docs\example-grok-answer.txt`.
+
+## Make a Short from a story file
 
 In PowerShell, inside the `heartwarmers` folder:
 
@@ -98,6 +115,8 @@ Put soft tracks (piano/strings/acoustic) from the **YouTube Audio Library**
 The pipeline picks one per video. If the folder is empty it uses a simple placeholder pad.
 
 ## Changing the voice
+The channel voice is **Kristen** (ElevenLabs), read at speed 1.08 (`ELEVENLABS_SPEED`).
+At that pace, 45–52 spoken words make a 20–25 second Short.
 `ELEVENLABS_VOICE_ID` in `.env` sets the channel voice. Keep it the same for every video so
 the channel sounds recognisable. The voice step is swappable (`TTS_PROVIDER`), so another
 provider can be added later without touching the rest.
@@ -120,7 +139,9 @@ When there is one sentence per shot, cuts land on sentence starts automatically.
 ## Folder map
 
 ```
-pipeline/   Python steps: tts/ (voice), captions, footage, audio, stock/ (Pixabay), qc, make_short
+pipeline/   Python steps: tts/ (voice), captions, footage, audio, stock/ (Pixabay), qc,
+            make_short, import_story (Grok inbox)
+docs/       Grok instructions + example answer
 studio/     Remotion video template (brand.ts = all brand settings)
 stories/    one JSON file per story
 assets/     footage/ and music/ (your media; not uploaded to GitHub)
@@ -130,5 +151,6 @@ work/       temporary files (safe to delete)
 
 ## What's built so far (Phase 1)
 Brand template, voice, captions, footage reframing, music ducking, render, quality check.
-**Next:** story finder + scoring, automatic script/title writer, Pixabay auto-search per shot,
+Grok import with automatic Pixabay footage per sentence.
+**Next:** story scoring, automatic script/title writer,
 optional "upload as Private" with your approval, and the weekly analytics feedback loop.

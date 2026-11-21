@@ -11,7 +11,9 @@ from ..config import ASSETS, env
 
 API = "https://pixabay.com/api/videos/"
 # AI clips would need an AI disclosure; cartoons/green-screen do not fit the channel.
-SKIP_TAGS = ("ai generated", "3d", "cartoon", "greenscreen", "chroma key", "animation")
+SKIP_TAGS = ("ai generated", "3d", "cartoon", "greenscreen", "green screen", "chroma key", "animation",
+             "animated", "illustration", "vector", "flat design", "alpha", "transparent", "overlay",
+             "black background", "motion graphic", "intro", "particles")
 
 
 def search(query: str, per_page: int = 10) -> list[dict]:
@@ -19,7 +21,7 @@ def search(query: str, per_page: int = 10) -> list[dict]:
     if not key:
         raise SystemExit("PIXABAY_API_KEY is missing from your .env file.")
     r = requests.get(API, params={"key": key, "q": query, "per_page": per_page,
-                                  "safesearch": "true"}, timeout=30)
+                                  "safesearch": "true", "video_type": "film"}, timeout=30)
     if r.status_code != 200:
         raise SystemExit(f"Pixabay search failed ({r.status_code}): {r.text[:200]}")
     hits = []
