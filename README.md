@@ -78,6 +78,35 @@ An example answer is in `docs\example-grok-answer.txt`.
 - A Short with **no** real story footage fails the quality check: all-stock Shorts don't
   get pushed by YouTube.
 
+## Daily automatic run on your laptop (8:00 AM)
+
+Every morning the Grok bot uploads two stories to Google Drive (`Warm Hearts Daily\<date>\story-1`,
+`story-2`: a `script.txt` plus the story's videos/photos). Google Drive for desktop syncs them to
+your laptop, and at **8:00 AM** a Windows scheduled task makes both videos.
+
+**Finished videos:** `Videos\Warm Hearts Daily\<date>\story-1\` on your laptop (video, title,
+description, quality report) plus `summary.txt` for the day. A copy also goes to Drive's
+`Warm Hearts Daily\Finished` folder. Nothing is ever published.
+
+**One-time setup** (after the clone steps above, in PowerShell inside the `heartwarmers` folder):
+```
+git checkout claude/zealous-galileo-7xso69
+powershell -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
+```
+It installs everything, finds your synced Drive folder, opens `.env` for your keys, and creates
+the 8:00 AM task. In Google Drive for desktop, right-click `Warm Hearts Daily` and choose
+**Available offline** so files are on the laptop before 8:00.
+
+**Good to know**
+- The laptop must be on or asleep (not shut down). If it was off at 8:00, the run starts as soon
+  as you're back. It waits up to an hour for Grok's upload to finish syncing.
+- **Make videos now:** double-click `scripts\make-today.cmd`.
+- **Redo a day without spending voice characters:** in PowerShell,
+  `scripts\run-daily.ps1 2026-11-21 --reuse-voice` (delete that day's story folder in
+  `Videos\Warm Hearts Daily` first, since finished stories are skipped).
+- Each run writes a log to `logs\<date>.log`.
+- Change the time: open Task Scheduler, find "Warm Hearts Daily", edit the trigger.
+
 ## Make a Short from a story file
 
 In PowerShell, inside the `heartwarmers` folder:

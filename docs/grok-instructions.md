@@ -25,6 +25,26 @@ The studio takes it from there: voice, captions, footage, branding, render, qual
 
 ---
 
+## Daily Drive uploads (the 8am automatic run)
+
+Every morning by 7:00 AM the Grok bot uploads to Google Drive:
+
+```
+Warm Hearts Daily\
+  2026-11-21\            <- today's date, YYYY-MM-DD
+    story-1\
+      script.txt         <- Grok's { ... } answer, as a PLAIN TEXT file (not a Google Doc)
+      clip1.mp4          <- the story's own videos and photos
+      photo1.jpg
+    story-2\
+      ...
+```
+
+For each uploaded media file, add an entry to "story_media" with "file" set to the file's
+name and "creator" set to who posted it, e.g.
+`{ "file": "clip1.mp4", "creator": "Dayton Police Department", "platform": "Facebook", "url": "<original post link>", "is_original": true }`
+so the video credits the right people. At 8:00 the laptop makes both videos.
+
 ## Instructions block (copy everything between the lines into Grok)
 
 ---
@@ -48,6 +68,7 @@ Rules for the script:
   "kind_hearted_template" (e.g. "A Kind-Hearted Officer ... ❤️🥹"), "curiosity",
   "emotional_quote", "question". Titles under 70 characters.
 - Story media (VERY IMPORTANT): list the story's OWN videos and photos under "story_media",
+  (if you uploaded the file yourself, put its file name in "file"),
   2–5 items. Give the direct link to each post or file: the original Facebook/X/Instagram/
   TikTok/YouTube post, a direct image link, or the news article that shows them.
   Prefer the ORIGINAL poster (the family, the department, the person who filmed it) over

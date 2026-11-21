@@ -199,14 +199,19 @@ def read_folder(folder: Path) -> tuple[dict, list[Path]]:
     """A story folder (e.g. from Drive): one script file with Grok's { ... } block + media files."""
     media = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in MEDIA_EXT]
     texts = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in (".txt", ".json", ".md", "")]
+    gdocs = [f for f in folder.iterdir() if f.suffix.lower() == ".gdoc"]
     for t in sorted(texts):
         raw = t.read_text(encoding="utf-8", errors="replace")
         if "{" in raw:
             return extract_json(raw), media
-    raise Problem(f"No script file found in {folder.name}. Expected a .txt/.json/Google Doc with Grok's {{ ... }} block.")
+    if gdocs:
+        raise Problem(f"The script in {folder.name} is a Google Doc ({gdocs[0].name}). Google Docs can't be read "
+                      f"from the synced Drive folder: ask the Grok bot to upload the script as a plain .txt file.")
+    raise Problem(f"No script file found in {folder.name}. Expected a .txt or .json file with Grok's {{ ... }} block.")
 
 
-def import_file(path: Path) -> Path:
+def import_file(path: Path, story_id: str | None = None) -> Path:
+    """story_id: a fixed id (used for daily drops, so re-runs reuse the same voiceover)."""
     local_media: list[Path] = []
     if path.is_dir():
         d, local_media = read_folder(path)
@@ -219,13 +224,17 @@ def import_file(path: Path) -> Path:
         raise Problem("\n".join(f"- {e}" for e in errs))
 
     st, sc = d["story"], d["script"]
-    sid = d.get("id") or slugify(f"{st.get('hero_type') or st['who']} {st.get('date') or date.today()}")
-    out = STORIES / f"{sid}.json"
-    n = 2
-    while out.exists():
-        out = STORIES / f"{sid}-{n}.json"
-        n += 1
-    sid = out.stem
+    if story_id:
+        sid = story_id
+        out = STORIES / f"{sid}.json"  # same drop story -> same file, overwritten
+    else:
+        sid = d.get("id") or slugify(f"{st.get('hero_type') or st['who']} {st.get('date') or date.today()}")
+        out = STORIES / f"{sid}.json"
+        n = 2
+        while out.exists():
+            out = STORIES / f"{sid}-{n}.json"
+            n += 1
+        sid = out.stem
 
     from .source_media import fetch
     media = d.get("story_media") or d.get("story_footage") or []

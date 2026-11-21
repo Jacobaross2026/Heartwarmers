@@ -9,7 +9,12 @@ API = "https://api.elevenlabs.io/v1/text-to-speech/{voice}"
 
 
 def synthesize(text: str, out_path: Path) -> Path:
-    key = env("ELEVENLABS_API_KEY", "proxy-injected")
+    key = env("ELEVENLABS_API_KEY")
+    if not key and Path("/root/.ccr").exists():
+        key = "proxy-injected"  # cloud workspace: the network proxy adds the real key
+    if not key:
+        raise SystemExit("ELEVENLABS_API_KEY is missing from your .env file. Copy it from elevenlabs.io "
+                         "(Profile > API Keys) into .env.")
     voice = env("ELEVENLABS_VOICE_ID", "lXiPxoDwq0d2OK7NdaXw")  # Kristen
     model = env("ELEVENLABS_MODEL", "eleven_multilingual_v2")
     r = requests.post(

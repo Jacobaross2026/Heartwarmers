@@ -45,7 +45,9 @@ def review_copy(video: Path, out: Path, max_mb: float = MAX_UPLOAD_MB) -> Path:
     return out
 
 
-def main(drop: str) -> int:
+def main(drop: str, out_root: Path | None = None, max_mb: float | None = MAX_UPLOAD_MB,
+         reuse_voice: bool = False) -> int:
+    """out_root: where finished files go (default upload/<date>). max_mb=None keeps full quality."""
     from .make_short import main as make
     drop_dir = Path(drop)
     date = drop_dir.name
@@ -53,14 +55,14 @@ def main(drop: str) -> int:
     if not stories:
         print(f"No story folders in {drop_dir}. Nothing to make today.")
         return 0
-    up_root = UPLOAD / date
+    up_root = Path(out_root) if out_root else UPLOAD / date
     up_root.mkdir(parents=True, exist_ok=True)
     summary, manifest, bad = [f"Warm Hearts Daily - {date}", ""], [], 0
 
     for folder in stories:
         print(f"\n################ {folder.name}")
         try:
-            story_file = import_file(folder)
+            story_file = import_file(folder, story_id=f"{date}-{folder.name}")
         except Problem as e:
             bad += 1
             summary += [f"{folder.name}: NOT MADE. The script needs fixing:", str(e), ""]
@@ -71,7 +73,7 @@ def main(drop: str) -> int:
             continue
         sid = story_file.stem
         try:
-            code = make(str(story_file))
+            code = make(str(story_file), reuse_voice=reuse_voice)
         except (SystemExit, subprocess.CalledProcessError) as e:
             bad += 1
             summary += [f"{folder.name} ({sid}): NOT MADE. {e}", ""]
@@ -80,8 +82,11 @@ def main(drop: str) -> int:
         up = up_root / folder.name
         up.mkdir(parents=True, exist_ok=True)
         status = "READY FOR REVIEW" if code == 0 else "DRAFT, QUALITY CHECK FAILED"
-        name = f"{date}_{folder.name}_{sid}.mp4"
-        review_copy(out_dir / f"{sid}.mp4", up / name)
+        name = f"{date}_{folder.name}.mp4"
+        if max_mb:
+            review_copy(out_dir / f"{sid}.mp4", up / name, max_mb)
+        else:
+            shutil.copyfile(out_dir / f"{sid}.mp4", up / name)
         for txt in ("title.txt", "description.txt", "qc_report.txt"):
             shutil.copyfile(out_dir / txt, up / txt)
         title = (out_dir / "title.txt").read_text(encoding="utf-8").splitlines()[0]
@@ -103,4 +108,4 @@ def main(drop: str) -> int:
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise SystemExit("Usage: python -m pipeline.daily drop/<date>")
-    sys.exit(main(sys.argv[1]))
+    sys.exit(main(sys.argv[1], reuse_voice="--reuse-voice" in sys.argv))
