@@ -128,7 +128,7 @@ def fetch(items: list[dict], story_id: str) -> tuple[list[dict], list[str]]:
     records, problems, n = [], [], 0
     for item in items:
         url = (item.get("url") or "").strip()
-        if not url:
+        if not url or item.get("file"):  # no link, or already supplied as a local file
             continue
         kind = (item.get("type") or "").lower()
         print(f"   media: {url[:90]}")
@@ -160,3 +160,30 @@ def fetch(items: list[dict], story_id: str) -> tuple[list[dict], list[str]]:
             print(f"      saved {f.name} ({k})")
             records.append(_record(f, item, k, url))
     return records, problems
+
+
+VIDEO_EXT = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
+
+
+def use_local(files: list[Path], items: list[dict], story_id: str, fallback_creator: str) -> list[dict]:
+    """Media files uploaded next to the script (e.g. by the Grok bot into Drive).
+    Credit comes from the story_media entry whose "file" matches, else the story's source."""
+    import shutil
+    folder = ASSETS / "footage" / story_id
+    folder.mkdir(parents=True, exist_ok=True)
+    by_name = {Path(i["file"]).name.lower(): i for i in items if i.get("file")}
+    records = []
+    for n, f in enumerate(sorted(files), 1):
+        ext = f.suffix.lower()
+        kind = "video" if ext in VIDEO_EXT else "image"
+        dest = folder / f"local-{n}{ext}"
+        shutil.copyfile(f, dest)
+        item = dict(by_name.get(f.name.lower(), {}))
+        item.setdefault("creator", fallback_creator)
+        item.setdefault("is_original", True)
+        rec = _record(dest, item, kind, item.get("url", ""))
+        if not item.get("url"):
+            rec["platform"] = item.get("platform", "")
+        print(f"   media: {f.name} ({kind}, credit: {rec['creator'] or 'story source'})")
+        records.append(rec)
+    return records

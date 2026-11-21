@@ -12,7 +12,16 @@ ASSETS = ROOT / "assets"
 WORK = ROOT / "work"          # scratch files per video
 OUTPUT = ROOT / "output"      # finished drafts for review
 STUDIO = ROOT / "studio"      # Remotion project
-HISTORY = OUTPUT / "history.json"
+# Title-style history. Kept in git (state/) so daily cloud runs remember past titles.
+HISTORY = ROOT / "state" / "history.json"
+
+# Cloud sessions: use the pre-installed browser for rendering and plain HF downloads.
+_CLOUD_BROWSER = Path("/opt/pw-browsers")
+if not os.environ.get("REMOTION_BROWSER") and _CLOUD_BROWSER.exists():
+    _shells = sorted(_CLOUD_BROWSER.glob("chromium_headless_shell-*/*/chrome-headless-shell"))
+    if _shells:
+        os.environ["REMOTION_BROWSER"] = str(_shells[-1])
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
 FPS = 30
 WIDTH, HEIGHT = 1080, 1920

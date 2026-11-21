@@ -192,8 +192,26 @@ def choose_title(titles: list[dict]) -> int:
     return 0
 
 
+MEDIA_EXT = (".mp4", ".mov", ".m4v", ".webm", ".mkv", ".jpg", ".jpeg", ".png", ".webp")
+
+
+def read_folder(folder: Path) -> tuple[dict, list[Path]]:
+    """A story folder (e.g. from Drive): one script file with Grok's { ... } block + media files."""
+    media = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in MEDIA_EXT]
+    texts = [f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in (".txt", ".json", ".md", "")]
+    for t in sorted(texts):
+        raw = t.read_text(encoding="utf-8", errors="replace")
+        if "{" in raw:
+            return extract_json(raw), media
+    raise Problem(f"No script file found in {folder.name}. Expected a .txt/.json/Google Doc with Grok's {{ ... }} block.")
+
+
 def import_file(path: Path) -> Path:
-    d = extract_json(path.read_text(encoding="utf-8", errors="replace"))
+    local_media: list[Path] = []
+    if path.is_dir():
+        d, local_media = read_folder(path)
+    else:
+        d = extract_json(path.read_text(encoding="utf-8", errors="replace"))
     errs, warns = check(d)
     for w in warns:
         print(f"   note: {w}")
@@ -212,9 +230,13 @@ def import_file(path: Path) -> Path:
     from .source_media import fetch
     media = d.get("story_media") or d.get("story_footage") or []
     real, problems = fetch(media, sid)
+    if local_media:
+        from .source_media import use_local
+        src = (st.get("sources") or [{}])[0].get("name", "")
+        real = use_local(local_media, media, sid, src) + real
     for p in problems:
         print(f"   note: {p}")
-    if not real:
+    if not real and d.get("shots"):
         print("   WARNING: no real story footage downloaded; the quality check will block this video.")
     footage = build_footage(d["shots"], real)
     sc["chosen_title"] = choose_title(sc["titles"])
@@ -223,6 +245,7 @@ def import_file(path: Path) -> Path:
         "status": "draft",
         "is_sample": bool(d.get("is_sample", False)),
         "imported_from": path.name,
+        "drop_date": d.get("drop_date", ""),
         "story": {**st, "category": st.get("category", "everyday_hero_kindness")},
         "story_media": media,
         "script": sc,

@@ -114,6 +114,7 @@ def main(story_path: str, reuse_voice: bool = False) -> int:
     hist = json.loads(HISTORY.read_text()) if HISTORY.exists() else []
     hist.append({"id": sid, "title": title["text"], "title_style": title["style"],
                  "made": datetime.now().isoformat(timespec="seconds")})
+    HISTORY.parent.mkdir(parents=True, exist_ok=True)
     HISTORY.write_text(json.dumps(hist, indent=1))
     print(f"\nReady for your review: {video}")
     return 0
